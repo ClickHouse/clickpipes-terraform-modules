@@ -1,0 +1,26 @@
+gcp_project_id             = "my-gcp-project"
+clickhouse_organization_id = "00000000-0000-0000-0000-000000000000"
+clickhouse_service_id      = "00000000-0000-0000-0000-000000000000"
+
+# Include the ClickPipes consumer project for your ClickHouse service.
+psc_consumer_accept_projects = [
+  {
+    project_id       = "clickpipes-production"
+    connection_limit = 10
+  }
+]
+
+# Creates the topic only. It does not produce records.
+create_topic = true
+
+# Keep false until your topic contains data to load.
+create_clickpipe = false
+
+# Required only when create_clickpipe = true.
+# consumer_group    = "clickpipes-example"
+# destination_table = "managed_kafka_events"
+# columns = [
+#   { name = "id", type = "UInt64" },
+#   { name = "payload", type = "String" },
+# ]
+# sorting_key = ["id"]

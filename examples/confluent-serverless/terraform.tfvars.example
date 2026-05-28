@@ -1,0 +1,16 @@
+clickhouse_organization_id = "00000000-0000-0000-0000-000000000000"
+clickhouse_service_id      = "00000000-0000-0000-0000-000000000000"
+
+# Keep false until your topic exists, contains data, and the access point DNS
+# domain is known/configured for the RPE.
+create_clickpipe = false
+
+# Required before create_clickpipe = true.
+# access_point_dns_domain = "example.private.confluent.cloud"
+# consumer_group          = "clickpipes-confluent-serverless-example"
+# destination_table       = "confluent_serverless_events"
+# columns = [
+#   { name = "id", type = "UInt64" },
+#   { name = "payload", type = "String" },
+# ]
+# sorting_key = ["id"]

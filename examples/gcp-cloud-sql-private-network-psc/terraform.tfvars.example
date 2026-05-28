@@ -1,0 +1,18 @@
+gcp_project_id             = "my-gcp-project"
+clickhouse_organization_id = "00000000-0000-0000-0000-000000000000"
+clickhouse_service_id      = "00000000-0000-0000-0000-000000000000"
+
+# Include the ClickPipes consumer project for your ClickHouse service.
+psc_consumer_accept_projects = [
+  {
+    project_id       = "clickpipes-production"
+    connection_limit = 10
+  }
+]
+
+# Keep false until your source table exists and contains data to load.
+create_clickpipe = false
+
+# Required only when create_clickpipe = true.
+# source_table = "events"
+# target_table = "cloud_sql_private_events"

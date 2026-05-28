@@ -1,0 +1,33 @@
+# ClickPipes Terraform Modules
+
+Reusable Terraform modules for ClickHouse ClickPipes private connectivity examples.
+
+Each public module creates the source infrastructure, ClickPipes Reverse Private Endpoint (RPE) resources, and optionally a ClickPipe. Modules do not create ClickHouse services and do not create or seed demo data.
+
+## Modules
+
+- `modules/gcp-managed-kafka` creates Google Cloud Managed Service for Apache Kafka, producer-side PSC service attachments, ClickPipes RPEs, and optionally a Kafka ClickPipe.
+- `modules/gcp-cloud-sql-native-psc` creates Cloud SQL for PostgreSQL with native Private Service Connect enabled, a ClickPipes RPE, and optionally a Postgres ClickPipe.
+- `modules/gcp-cloud-sql-private-network-psc` creates Cloud SQL for PostgreSQL on a private network, exposes it through an internal TCP load balancer and producer-owned PSC service attachment, creates a ClickPipes RPE, and optionally a Postgres ClickPipe.
+- `modules/confluent-dedicated` creates Confluent Cloud Dedicated Kafka on GCP PSC, ClickPipes RPEs, and optionally a Kafka ClickPipe.
+- `modules/confluent-serverless` creates Confluent Cloud Enterprise/serverless Kafka ingress PSC resources, a ClickPipes RPE, and optionally a Kafka ClickPipe. Serverless PSC may require a two-phase workflow; see the module README.
+
+## `create_clickpipe`
+
+All modules default to `create_clickpipe = false`.
+
+When `false`, the module creates source infrastructure and Reverse Private Endpoint connectivity only. When `true`, the module provisions the ClickPipe, which starts data loading from the user's source into ClickHouse.
+
+The modules do not create source tables, seed Kafka records, or insert sample rows. Create the source topic/table and data using your application or an out-of-band process before enabling ClickPipe data loading.
+
+## ClickHouse Provider
+
+Configure the ClickHouse provider in the root module. These modules expect an existing ClickHouse Cloud service ID.
+
+```hcl
+provider "clickhouse" {
+  organization_id = var.clickhouse_organization_id
+  token_key       = var.clickhouse_cloud_api_key
+  token_secret    = var.clickhouse_cloud_api_secret
+}
+```
