@@ -3,45 +3,49 @@ variable "clickhouse_service_id" {
   type        = string
 }
 
+variable "clickpipes_consumer_aws_account_id" {
+  description = "AWS account ID used by the ClickPipes consumer VPC for this ClickHouse service."
+  type        = string
+}
+
 variable "region" {
-  description = "GCP region for Confluent Cloud and the ClickHouse service."
+  description = "AWS region for Confluent Cloud and the ClickHouse service."
   type        = string
 }
 
 variable "resource_prefix" {
   description = "Prefix for Confluent resource display names."
   type        = string
-  default     = "clickpipes-confluent-serverless"
+  default     = "clickpipes-aws-confluent-dedicated"
 }
 
 variable "environment_display_name" {
   description = "Confluent environment display name."
   type        = string
-  default     = "clickpipes-confluent-serverless"
+  default     = "clickpipes-aws-confluent-dedicated"
+}
+
+variable "network_zones" {
+  description = "AWS availability zone IDs for the Confluent Dedicated PrivateLink network, for example euc1-az1."
+  type        = list(string)
 }
 
 variable "cluster_availability" {
-  description = "Confluent Enterprise/serverless cluster availability."
+  description = "Confluent Dedicated cluster availability."
   type        = string
-  default     = "HIGH"
+  default     = "MULTI_ZONE"
 }
 
-variable "create_access_point" {
-  description = "Whether to create the Confluent ingress access point using the ClickPipes RPE endpoint ID."
-  type        = bool
-  default     = true
-}
-
-variable "access_point_dns_domain" {
-  description = "Optional Confluent access point DNS domain to map through the RPE, without a leading wildcard. Required when create_clickpipe is true."
-  type        = string
-  default     = null
+variable "cluster_cku" {
+  description = "Confluent Dedicated CKUs."
+  type        = number
+  default     = 2
 }
 
 variable "rpe_description" {
   description = "Description for the ClickPipes Reverse Private Endpoint."
   type        = string
-  default     = "Confluent Cloud serverless PSC endpoint"
+  default     = "Confluent Cloud Dedicated AWS PrivateLink endpoint"
 }
 
 variable "create_clickpipe" {
@@ -53,7 +57,7 @@ variable "create_clickpipe" {
 variable "clickpipe_name" {
   description = "Name of the ClickPipe to create when create_clickpipe is true."
   type        = string
-  default     = "Confluent Cloud serverless PSC"
+  default     = "Confluent Cloud Dedicated AWS PrivateLink"
 }
 
 variable "topic_name" {

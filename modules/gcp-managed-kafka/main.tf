@@ -306,8 +306,15 @@ resource "clickhouse_clickpipes_reverse_private_endpoint" "kafka" {
   description            = "${var.rpe_description_prefix} ${each.key}"
   type                   = "GCP_PSC_SERVICE_ATTACHMENT"
   gcp_service_attachment = google_compute_service_attachment.kafka[each.key].id
+}
 
-  custom_private_dns_mappings = concat(
+resource "clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns" "kafka" {
+  for_each = local.kafka_broker_keys
+
+  service_id                  = var.clickhouse_service_id
+  reverse_private_endpoint_id = clickhouse_clickpipes_reverse_private_endpoint.kafka[each.key].id
+
+  mapping = concat(
     [
       {
         private_dns_name = "${each.key}.${local.kafka_dns_zone}"
@@ -327,7 +334,7 @@ resource "clickhouse_clickpipe" "kafka" {
   name       = var.clickpipe_name
   service_id = var.clickhouse_service_id
 
-  depends_on = [clickhouse_clickpipes_reverse_private_endpoint.kafka]
+  depends_on = [clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns.kafka]
 
   scaling = {
     replicas = 1

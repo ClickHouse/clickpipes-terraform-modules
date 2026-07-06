@@ -1,4 +1,4 @@
-# Confluent Cloud Dedicated PSC ClickPipes Module
+# GCP Confluent Cloud Dedicated PSC ClickPipes Module
 
 Creates Confluent Cloud Dedicated Kafka on GCP Private Service Connect, ClickPipes Reverse Private Endpoints, and optionally a Kafka ClickPipe.
 

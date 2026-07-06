@@ -4,7 +4,7 @@ terraform {
   required_providers {
     clickhouse = {
       source  = "ClickHouse/clickhouse"
-      version = ">= 3.14.0"
+      version = ">= 3.16.0"
     }
     confluent = {
       source  = "confluentinc/confluent"
@@ -24,8 +24,8 @@ provider "confluent" {
   cloud_api_secret = var.confluent_cloud_api_secret
 }
 
-module "confluent_dedicated" {
-  source = "../../modules/confluent-dedicated"
+module "gcp_confluent_dedicated" {
+  source = "../../modules/gcp-confluent-dedicated"
 
   clickhouse_service_id          = var.clickhouse_service_id
   clickpipes_consumer_project_id = var.clickpipes_consumer_project_id
@@ -40,13 +40,13 @@ module "confluent_dedicated" {
 }
 
 output "bootstrap_endpoint" {
-  value = module.confluent_dedicated.bootstrap_endpoint
+  value = module.gcp_confluent_dedicated.bootstrap_endpoint
 }
 
 output "reverse_private_endpoint_ids" {
-  value = module.confluent_dedicated.reverse_private_endpoint_ids
+  value = module.gcp_confluent_dedicated.reverse_private_endpoint_ids
 }
 
 output "clickpipe_id" {
-  value = module.confluent_dedicated.clickpipe_id
+  value = module.gcp_confluent_dedicated.clickpipe_id
 }

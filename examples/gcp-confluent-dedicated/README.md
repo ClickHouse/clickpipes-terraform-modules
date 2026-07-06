@@ -1,4 +1,4 @@
-# Confluent Dedicated Example
+# GCP Confluent Dedicated Example
 
 Creates Confluent Cloud Dedicated Kafka on GCP PSC, ClickPipes RPEs, and optionally a Kafka ClickPipe.
 

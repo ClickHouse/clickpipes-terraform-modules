@@ -4,11 +4,11 @@ terraform {
   required_providers {
     clickhouse = {
       source  = "ClickHouse/clickhouse"
-      version = ">= 3.14.0"
+      version = ">= 3.16.0"
     }
     confluent = {
       source  = "confluentinc/confluent"
-      version = ">= 2.73.0"
+      version = ">= 2.76.0"
     }
   }
 }

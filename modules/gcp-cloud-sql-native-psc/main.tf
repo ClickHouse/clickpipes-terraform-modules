@@ -63,8 +63,13 @@ resource "clickhouse_clickpipes_reverse_private_endpoint" "cloud_sql" {
   description            = var.rpe_description
   type                   = "GCP_PSC_SERVICE_ATTACHMENT"
   gcp_service_attachment = google_sql_database_instance.postgres.psc_service_attachment_link
+}
 
-  custom_private_dns_mappings = [
+resource "clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns" "cloud_sql" {
+  service_id                  = var.clickhouse_service_id
+  reverse_private_endpoint_id = clickhouse_clickpipes_reverse_private_endpoint.cloud_sql.id
+
+  mapping = [
     {
       private_dns_name = local.db_host
     }
@@ -77,7 +82,7 @@ resource "clickhouse_clickpipe" "cloud_sql" {
   name       = var.clickpipe_name
   service_id = var.clickhouse_service_id
 
-  depends_on = [clickhouse_clickpipes_reverse_private_endpoint.cloud_sql]
+  depends_on = [clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns.cloud_sql]
 
   source = {
     postgres = {
