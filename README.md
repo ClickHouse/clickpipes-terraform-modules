@@ -9,8 +9,8 @@ Each public module creates the source infrastructure, ClickPipes Reverse Private
 - `modules/gcp-managed-kafka` creates Google Cloud Managed Service for Apache Kafka, producer-side PSC service attachments, ClickPipes RPEs, and optionally a Kafka ClickPipe.
 - `modules/gcp-cloud-sql-native-psc` creates Cloud SQL for PostgreSQL with native Private Service Connect enabled, a ClickPipes RPE, and optionally a Postgres ClickPipe.
 - `modules/gcp-cloud-sql-private-network-psc` creates Cloud SQL for PostgreSQL on a private network, exposes it through an internal TCP load balancer and producer-owned PSC service attachment, creates a ClickPipes RPE, and optionally a Postgres ClickPipe.
-- `modules/aws-confluent-dedicated` creates Confluent Cloud Dedicated Kafka on AWS PrivateLink, a ClickPipes RPE, custom private DNS mappings, and optionally a Kafka ClickPipe.
-- `modules/gcp-confluent-dedicated` creates Confluent Cloud Dedicated Kafka on GCP PSC, ClickPipes RPEs, and optionally a Kafka ClickPipe.
+- `modules/confluent-dedicated` creates Confluent Cloud Dedicated Kafka on AWS PrivateLink or GCP PSC, ClickPipes RPEs, custom private DNS mappings, and optionally a Kafka ClickPipe.
+- `modules/confluent-serverless` creates Confluent Cloud Enterprise/serverless Kafka on AWS PrivateLink or GCP PSC ingress gateways, a ClickPipes RPE, custom private DNS mappings, and optionally a Kafka ClickPipe.
 
 ## `create_clickpipe`
 

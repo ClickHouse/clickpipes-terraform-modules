@@ -8,7 +8,7 @@ terraform {
     }
     confluent = {
       source  = "confluentinc/confluent"
-      version = ">= 2.73.0"
+      version = ">= 2.76.0"
     }
   }
 }
@@ -25,18 +25,19 @@ provider "confluent" {
 }
 
 module "gcp_confluent_dedicated" {
-  source = "../../modules/gcp-confluent-dedicated"
+  source = "../../modules/confluent-dedicated"
 
-  clickhouse_service_id          = var.clickhouse_service_id
-  clickpipes_consumer_project_id = var.clickpipes_consumer_project_id
-  region                         = var.region
-  network_zones                  = var.network_zones
-  topic_name                     = var.topic_name
-  create_clickpipe               = var.create_clickpipe
-  consumer_group                 = var.consumer_group
-  destination_table              = var.destination_table
-  columns                        = var.columns
-  sorting_key                    = var.sorting_key
+  clickhouse_service_id              = var.clickhouse_service_id
+  clickpipes_consumer_gcp_project_id = var.clickpipes_consumer_project_id
+  cloud                              = "GCP"
+  region                             = var.region
+  network_zones                      = var.network_zones
+  topic_name                         = var.topic_name
+  create_clickpipe                   = var.create_clickpipe
+  consumer_group                     = var.consumer_group
+  destination_table                  = var.destination_table
+  columns                            = var.columns
+  sorting_key                        = var.sorting_key
 }
 
 output "bootstrap_endpoint" {

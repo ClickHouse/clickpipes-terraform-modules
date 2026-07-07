@@ -25,10 +25,11 @@ provider "confluent" {
 }
 
 module "aws_confluent_dedicated" {
-  source = "../../modules/aws-confluent-dedicated"
+  source = "../../modules/confluent-dedicated"
 
   clickhouse_service_id              = var.clickhouse_service_id
   clickpipes_consumer_aws_account_id = var.clickpipes_consumer_aws_account_id
+  cloud                              = "AWS"
   region                             = var.region
   network_zones                      = var.network_zones
   topic_name                         = var.topic_name

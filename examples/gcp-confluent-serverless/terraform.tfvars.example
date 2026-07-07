@@ -1,0 +1,16 @@
+clickhouse_organization_id = "00000000-0000-0000-0000-000000000000"
+clickhouse_service_id      = "00000000-0000-0000-0000-000000000000"
+
+region = "us-central1"
+
+# Keep false until your topic exists and contains data.
+create_clickpipe = false
+
+# Required before create_clickpipe = true.
+# consumer_group    = "clickpipes-gcp-confluent-serverless-example"
+# destination_table = "gcp_confluent_serverless_events"
+# columns = [
+#   { name = "id", type = "UInt64" },
+#   { name = "payload", type = "String" },
+# ]
+# sorting_key = ["id"]
