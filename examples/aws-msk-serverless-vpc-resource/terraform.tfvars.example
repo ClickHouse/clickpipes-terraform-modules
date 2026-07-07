@@ -1,0 +1,33 @@
+clickhouse_organization_id  = "00000000-0000-0000-0000-000000000000"
+clickhouse_cloud_api_key    = ""
+clickhouse_cloud_api_secret = ""
+
+clickhouse_service_id       = "00000000-0000-0000-0000-000000000000"
+clickhouse_service_iam_role = "arn:aws:iam::123456789012:role/CH-S3-example-Role"
+
+# Production ClickPipes AWS account. Use the environment-specific account for staging/dev.
+clickpipes_consumer_aws_account_id = "072088201116"
+
+region          = "eu-west-1"
+resource_prefix = "clickpipes-msk-serverless"
+
+topic_name       = "clickpipes-demo"
+consumer_group   = "clickpipes-msk-serverless-demo"
+create_clickpipe = false
+
+# Required only when create_clickpipe = true.
+destination_table = "msk_serverless_events"
+columns = [
+  {
+    name = "id"
+    type = "UInt64"
+  },
+  {
+    name = "payload"
+    type = "String"
+  },
+]
+
+tags = {
+  Project = "clickpipes-msk-serverless"
+}
