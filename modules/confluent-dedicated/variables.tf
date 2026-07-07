@@ -3,49 +3,66 @@ variable "clickhouse_service_id" {
   type        = string
 }
 
-variable "clickpipes_consumer_project_id" {
-  description = "GCP project ID or number used by the ClickPipes consumer VPC for this ClickHouse service."
+variable "cloud" {
+  description = "Cloud provider for Confluent Cloud Dedicated private networking. Supported values: AWS, GCP."
   type        = string
+
+  validation {
+    condition     = contains(["AWS", "GCP"], upper(var.cloud))
+    error_message = "cloud must be AWS or GCP."
+  }
+}
+
+variable "clickpipes_consumer_aws_account_id" {
+  description = "AWS account ID used by the ClickPipes consumer VPC for this ClickHouse service. Required when cloud is AWS."
+  type        = string
+  default     = null
+}
+
+variable "clickpipes_consumer_gcp_project_id" {
+  description = "GCP project ID or number used by the ClickPipes consumer VPC for this ClickHouse service. Required when cloud is GCP."
+  type        = string
+  default     = null
 }
 
 variable "region" {
-  description = "GCP region for Confluent Cloud and the ClickHouse service."
+  description = "Cloud region for Confluent Cloud and the ClickHouse service."
   type        = string
 }
 
 variable "resource_prefix" {
   description = "Prefix for Confluent resource display names."
   type        = string
-  default     = "clickpipes-gcp-confluent-dedicated"
+  default     = "clickpipes-confluent-dedicated"
 }
 
 variable "environment_display_name" {
   description = "Confluent environment display name."
   type        = string
-  default     = "clickpipes-gcp-confluent-dedicated"
+  default     = "clickpipes-confluent-dedicated"
 }
 
 variable "network_zones" {
-  description = "GCP zones for the Confluent Dedicated PSC network."
+  description = "Cloud provider zones for the Confluent Dedicated private network. AWS values are AZ IDs, for example euc1-az1. GCP values are zones, for example us-central1-a."
   type        = list(string)
 }
 
 variable "cluster_availability" {
-  description = "Confluent Dedicated cluster availability."
+  description = "Confluent Dedicated cluster availability. Defaults to MULTI_ZONE for AWS and SINGLE_ZONE for GCP."
   type        = string
-  default     = "SINGLE_ZONE"
+  default     = null
 }
 
 variable "cluster_cku" {
-  description = "Confluent Dedicated CKUs."
+  description = "Confluent Dedicated CKUs. Defaults to 2 for AWS and 1 for GCP."
   type        = number
-  default     = 1
+  default     = null
 }
 
-variable "rpe_description_prefix" {
-  description = "Description prefix for Confluent Dedicated RPEs."
+variable "rpe_description" {
+  description = "Description for the ClickPipes Reverse Private Endpoint. For GCP, the zone is appended."
   type        = string
-  default     = "Confluent Cloud Dedicated PSC endpoint"
+  default     = null
 }
 
 variable "create_clickpipe" {
@@ -57,7 +74,7 @@ variable "create_clickpipe" {
 variable "clickpipe_name" {
   description = "Name of the ClickPipe to create when create_clickpipe is true."
   type        = string
-  default     = "Confluent Cloud Dedicated PSC"
+  default     = "Confluent Cloud Dedicated private networking"
 }
 
 variable "topic_name" {
