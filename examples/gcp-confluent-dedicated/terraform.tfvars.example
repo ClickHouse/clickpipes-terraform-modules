@@ -6,8 +6,8 @@ clickpipes_consumer_project_id  = "clickpipes-production"
 create_clickpipe = false
 
 # Required only when create_clickpipe = true.
-# consumer_group    = "clickpipes-confluent-dedicated-example"
-# destination_table = "confluent_dedicated_events"
+# consumer_group    = "clickpipes-gcp-confluent-dedicated-example"
+# destination_table = "gcp_confluent_dedicated_events"
 # columns = [
 #   { name = "id", type = "UInt64" },
 #   { name = "payload", type = "String" },

@@ -26,9 +26,17 @@ variable "confluent_cloud_api_secret" {
   sensitive = true
 }
 
+variable "clickpipes_consumer_aws_account_id" {
+  type = string
+}
+
 variable "region" {
   type    = string
-  default = "us-east1"
+  default = "eu-central-1"
+}
+
+variable "network_zones" {
+  type = list(string)
 }
 
 variable "topic_name" {
@@ -36,14 +44,8 @@ variable "topic_name" {
   default = "clickpipes-demo"
 }
 
-variable "access_point_dns_domain" {
-  description = "Set after the Confluent access point DNS domain is known. Required when create_clickpipe is true."
-  type        = string
-  default     = null
-}
-
 variable "create_clickpipe" {
-  description = "Set true to create the ClickPipe and start loading data after the topic has data and DNS is configured."
+  description = "Set true to create the ClickPipe and start loading data after the topic has data."
   type        = bool
   default     = false
 }

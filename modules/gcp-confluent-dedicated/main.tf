@@ -102,7 +102,16 @@ resource "clickhouse_clickpipes_reverse_private_endpoint" "dedicated" {
   type                   = "GCP_PSC_SERVICE_ATTACHMENT"
   gcp_service_attachment = confluent_network.dedicated.gcp[0].private_service_connect_service_attachments[each.key]
 
-  custom_private_dns_mappings = concat(
+  depends_on = [confluent_private_link_access.dedicated]
+}
+
+resource "clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns" "dedicated" {
+  for_each = toset(var.network_zones)
+
+  service_id                  = var.clickhouse_service_id
+  reverse_private_endpoint_id = clickhouse_clickpipes_reverse_private_endpoint.dedicated[each.key].id
+
+  mapping = concat(
     [
       {
         private_dns_name = "*.${each.key}.${local.dns_domain}"
@@ -114,8 +123,6 @@ resource "clickhouse_clickpipes_reverse_private_endpoint" "dedicated" {
       }
     ] : []
   )
-
-  depends_on = [confluent_private_link_access.dedicated]
 }
 
 resource "clickhouse_clickpipe" "dedicated" {
@@ -124,7 +131,7 @@ resource "clickhouse_clickpipe" "dedicated" {
   name       = var.clickpipe_name
   service_id = var.clickhouse_service_id
 
-  depends_on = [clickhouse_clickpipes_reverse_private_endpoint.dedicated]
+  depends_on = [clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns.dedicated]
 
   scaling = {
     replicas = 1

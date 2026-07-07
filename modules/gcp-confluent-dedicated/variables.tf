@@ -16,13 +16,13 @@ variable "region" {
 variable "resource_prefix" {
   description = "Prefix for Confluent resource display names."
   type        = string
-  default     = "clickpipes-confluent-dedicated"
+  default     = "clickpipes-gcp-confluent-dedicated"
 }
 
 variable "environment_display_name" {
   description = "Confluent environment display name."
   type        = string
-  default     = "clickpipes-confluent-dedicated"
+  default     = "clickpipes-gcp-confluent-dedicated"
 }
 
 variable "network_zones" {

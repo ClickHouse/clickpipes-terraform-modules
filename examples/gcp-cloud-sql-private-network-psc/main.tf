@@ -4,7 +4,7 @@ terraform {
   required_providers {
     clickhouse = {
       source  = "ClickHouse/clickhouse"
-      version = ">= 3.14.0"
+      version = ">= 3.16.0"
     }
     google = {
       source  = "hashicorp/google"
