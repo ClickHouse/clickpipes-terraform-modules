@@ -3,8 +3,8 @@ resource "confluent_environment" "main" {
 }
 
 resource "confluent_network" "dedicated" {
-  display_name     = "${var.resource_prefix}-psc"
-  cloud            = "GCP"
+  display_name     = "${var.resource_prefix}-${local.network_suffix}"
+  cloud            = local.cloud
   region           = var.region
   connection_types = ["PRIVATELINK"]
   zones            = var.network_zones
@@ -19,10 +19,22 @@ resource "confluent_network" "dedicated" {
 }
 
 resource "confluent_private_link_access" "dedicated" {
-  display_name = "${var.resource_prefix}-psc-access"
+  display_name = "${var.resource_prefix}-${local.network_suffix}-access"
 
-  gcp {
-    project = var.clickpipes_consumer_project_id
+  dynamic "aws" {
+    for_each = local.is_aws ? [1] : []
+
+    content {
+      account = var.clickpipes_consumer_aws_account_id
+    }
+  }
+
+  dynamic "gcp" {
+    for_each = local.is_gcp ? [1] : []
+
+    content {
+      project = var.clickpipes_consumer_gcp_project_id
+    }
   }
 
   environment {
@@ -36,12 +48,12 @@ resource "confluent_private_link_access" "dedicated" {
 
 resource "confluent_kafka_cluster" "dedicated" {
   display_name = var.resource_prefix
-  availability = var.cluster_availability
-  cloud        = "GCP"
+  availability = local.cluster_availability
+  cloud        = local.cloud
   region       = var.region
 
   dedicated {
-    cku = var.cluster_cku
+    cku = local.cluster_cku
   }
 
   environment {
@@ -89,40 +101,83 @@ resource "confluent_api_key" "clickpipes" {
 }
 
 locals {
+  cloud             = upper(var.cloud)
+  is_aws            = local.cloud == "AWS"
+  is_gcp            = local.cloud == "GCP"
   sorted_zones      = sort(var.network_zones)
+  network_suffix    = local.is_aws ? "privatelink" : "psc"
   bootstrap_address = replace(confluent_kafka_cluster.dedicated.bootstrap_endpoint, "SASL_SSL://", "")
   dns_domain        = confluent_network.dedicated.dns_domain
+
+  cluster_availability = coalesce(var.cluster_availability, local.is_aws ? "MULTI_ZONE" : "SINGLE_ZONE")
+  cluster_cku          = coalesce(var.cluster_cku, local.is_aws ? 2 : 1)
+
+  aws_vpc_endpoint_service_name = local.is_aws ? confluent_network.dedicated.aws[0].private_link_endpoint_service : null
+  gcp_service_attachments       = local.is_gcp ? confluent_network.dedicated.gcp[0].private_service_connect_service_attachments : {}
+
+  rpe_targets = local.is_aws ? {
+    regional = {
+      description               = var.rpe_description != null ? var.rpe_description : "Confluent Cloud Dedicated AWS PrivateLink endpoint"
+      type                      = "VPC_ENDPOINT_SERVICE"
+      vpc_endpoint_service_name = local.aws_vpc_endpoint_service_name
+      gcp_service_attachment    = null
+    }
+    } : {
+    for zone in local.sorted_zones : zone => {
+      description               = "${var.rpe_description != null ? var.rpe_description : "Confluent Cloud Dedicated PSC endpoint"} ${zone}"
+      type                      = "GCP_PSC_SERVICE_ATTACHMENT"
+      vpc_endpoint_service_name = null
+      gcp_service_attachment    = local.gcp_service_attachments[zone]
+    }
+  }
+
+  custom_private_dns_mappings = local.is_aws ? {
+    regional = concat(
+      [
+        {
+          private_dns_name = "*.${local.dns_domain}"
+        }
+      ],
+      [
+        for zone in local.sorted_zones : {
+          private_dns_name = "*.${zone}.${local.dns_domain}"
+        }
+      ]
+    )
+    } : {
+    for zone in local.sorted_zones : zone => concat(
+      [
+        {
+          private_dns_name = "*.${zone}.${local.dns_domain}"
+        }
+      ],
+      zone == local.sorted_zones[0] ? [
+        {
+          private_dns_name = "*.${local.dns_domain}"
+        }
+      ] : []
+    )
+  }
 }
 
 resource "clickhouse_clickpipes_reverse_private_endpoint" "dedicated" {
-  for_each = toset(var.network_zones)
+  for_each = local.rpe_targets
 
-  service_id             = var.clickhouse_service_id
-  description            = "${var.rpe_description_prefix} ${each.key}"
-  type                   = "GCP_PSC_SERVICE_ATTACHMENT"
-  gcp_service_attachment = confluent_network.dedicated.gcp[0].private_service_connect_service_attachments[each.key]
+  service_id                = var.clickhouse_service_id
+  description               = each.value.description
+  type                      = each.value.type
+  vpc_endpoint_service_name = each.value.vpc_endpoint_service_name
+  gcp_service_attachment    = each.value.gcp_service_attachment
 
   depends_on = [confluent_private_link_access.dedicated]
 }
 
 resource "clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns" "dedicated" {
-  for_each = toset(var.network_zones)
+  for_each = local.custom_private_dns_mappings
 
   service_id                  = var.clickhouse_service_id
   reverse_private_endpoint_id = clickhouse_clickpipes_reverse_private_endpoint.dedicated[each.key].id
-
-  mapping = concat(
-    [
-      {
-        private_dns_name = "*.${each.key}.${local.dns_domain}"
-      }
-    ],
-    each.key == local.sorted_zones[0] ? [
-      {
-        private_dns_name = "*.${local.dns_domain}"
-      }
-    ] : []
-  )
+  mapping                     = each.value
 }
 
 resource "clickhouse_clickpipe" "dedicated" {
@@ -156,7 +211,8 @@ resource "clickhouse_clickpipe" "dedicated" {
       }
 
       reverse_private_endpoint_ids = [
-        for zone in local.sorted_zones : clickhouse_clickpipes_reverse_private_endpoint.dedicated[zone].id
+        for key in sort(keys(clickhouse_clickpipes_reverse_private_endpoint.dedicated)) :
+        clickhouse_clickpipes_reverse_private_endpoint.dedicated[key].id
       ]
     }
   }
