@@ -2,7 +2,7 @@
 
 This module creates an AWS MSK provisioned Express cluster and exposes each broker to ClickPipes through an AWS PrivateLink VPC endpoint service backed by a broker-specific Network Load Balancer.
 
-It is intended for cases where MSK multi-VPC connectivity is not available or not sufficient, including cross-region PrivateLink testing and MSK Express brokers.
+It is intended for cases where MSK multi-VPC connectivity is not available or not sufficient, including cross-region PrivateLink and MSK Express brokers.
 
 It creates:
 
