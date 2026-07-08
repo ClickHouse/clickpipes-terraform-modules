@@ -4,6 +4,9 @@ Reusable Terraform modules for ClickHouse ClickPipes private connectivity exampl
 
 Each public module creates the source infrastructure, ClickPipes Reverse Private Endpoint (RPE) resources, and optionally a ClickPipe. Modules do not create ClickHouse services and do not create or seed demo data.
 
+> [!IMPORTANT]  
+> This repository is not actively maintained. Treat these modules as inspirational for your Terraform stack. If you still want to use them directly, use the tagged version. 
+
 ## Modules
 
 - `modules/gcp-managed-kafka` creates Google Cloud Managed Service for Apache Kafka, producer-side PSC service attachments, ClickPipes RPEs, and optionally a Kafka ClickPipe.
