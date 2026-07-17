@@ -11,6 +11,7 @@ It creates:
 - One internal Network Load Balancer per MSK broker.
 - One IP target group per broker targeting that broker private IP on port `9098`.
 - One VPC endpoint service per broker.
+- A scheduled Lambda that keeps target groups aligned with current MSK broker IPs.
 - One ClickPipes reverse private endpoint of type `VPC_ENDPOINT_SERVICE` per broker.
 - Exact ClickPipes custom private DNS mappings for each original MSK bootstrap and broker hostname.
 - An IAM role ClickPipes can assume to authenticate to MSK using IAM.
@@ -39,6 +40,22 @@ boot-def.<cluster>.c2.kafka.<region>.amazonaws.com
 ```
 
 Because the NLBs are TCP passthrough, clients still use the original MSK broker hostname for TLS SNI and certificate validation.
+
+## Broker Target Reconciliation
+
+MSK can replace a broker and assign it a new private IP. NLB IP target registrations do not follow that change automatically, so this module runs an EventBridge-scheduled Lambda that reads the current brokers from the MSK `ListNodes` API.
+
+The reconciler uses the MSK broker ID rather than the order returned by the API. When an IP changes, it registers the current IP first and removes stale targets only after the current target passes the NLB health check. A broker ID or advertised-hostname change fails reconciliation without changing targets because the broker-specific ClickPipes DNS mapping may also need a Terraform apply.
+
+The schedule defaults to once per minute and can be changed:
+
+```hcl
+broker_target_reconciliation_schedule_expression = "rate(5 minutes)"
+```
+
+The initial Terraform apply invokes the reconciler synchronously and waits for healthy targets before creating an optional ClickPipe. A newly registered target gets one scheduled interval to become healthy; if it is still unhealthy on the next run, the `broker_target_reconciler_alarm_arn` CloudWatch alarm enters `ALARM`. Set `broker_target_reconciler_alarm_actions` to SNS topic or other supported action ARNs to receive notifications.
+
+At the one-minute default, the reconciler runs about 43,800 times per month. This normally fits within the Lambda, EventBridge Scheduler, CloudWatch Logs, and CloudWatch alarm free tiers. Without free-tier capacity, the scheduler, 128 MB Lambda, one alarm, and small log volume are expected to cost roughly `$0.15-$0.30` per cluster per month, depending on region and execution duration.
 
 ## Cross-Region PrivateLink
 

@@ -65,6 +65,18 @@ variable "number_of_broker_nodes" {
   default = 3
 }
 
+variable "broker_target_reconciliation_schedule_expression" {
+  description = "How often to reconcile current MSK broker IPs with NLB target groups."
+  type        = string
+  default     = "rate(1 minute)"
+}
+
+variable "broker_target_reconciler_alarm_actions" {
+  description = "Optional action ARNs notified when reconciliation fails."
+  type        = list(string)
+  default     = []
+}
+
 variable "topic_name" {
   type    = string
   default = "clickpipes-demo"

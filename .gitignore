@@ -7,3 +7,5 @@
 !.auto.tfvars.example
 !terraform.tfvars.example
 .DS_Store
+__pycache__/
+*.py[cod]
