@@ -11,7 +11,7 @@ locals {
   broker_keys = [for index in range(var.number_of_broker_nodes) : tostring(index + 1)]
 
   broker_nodes_by_key = {
-    for index, key in local.broker_keys : key => data.aws_msk_broker_nodes.kafka.node_info_list[index]
+    for node in data.aws_msk_broker_nodes.kafka.node_info_list : tostring(node.broker_id) => node
   }
 
   broker_hosts_by_key = {
@@ -155,12 +155,18 @@ resource "aws_lb_target_group" "broker" {
   vpc_id      = aws_vpc.kafka.id
 
   health_check {
-    enabled  = true
-    protocol = "TCP"
-    port     = "traffic-port"
+    enabled             = true
+    protocol            = "TCP"
+    port                = "traffic-port"
+    interval            = 10
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
   }
 
-  tags = merge(local.tags, { Name = "${var.resource_prefix}-${each.key}-tg" })
+  tags = merge(local.tags, {
+    Name        = "${var.resource_prefix}-${each.key}-tg"
+    MSKBrokerId = each.key
+  })
 }
 
 resource "aws_lb_target_group_attachment" "broker" {
@@ -169,6 +175,10 @@ resource "aws_lb_target_group_attachment" "broker" {
   target_group_arn = aws_lb_target_group.broker[each.key].arn
   target_id        = local.broker_nodes_by_key[each.key].client_vpc_ip_address
   port             = var.kafka_port
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb_listener" "broker" {
@@ -287,6 +297,7 @@ resource "clickhouse_clickpipe" "msk" {
   depends_on = [
     clickhouse_clickpipes_reverse_private_endpoint_custom_private_dns.broker,
     aws_iam_role_policy.clickpipe_msk_reader,
+    aws_lambda_invocation.broker_targets,
   ]
 
   scaling = {

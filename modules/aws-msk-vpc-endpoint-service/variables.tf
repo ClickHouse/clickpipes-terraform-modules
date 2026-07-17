@@ -98,6 +98,29 @@ variable "endpoint_service_acceptance_required" {
   default     = false
 }
 
+variable "broker_target_reconciliation_schedule_expression" {
+  description = "EventBridge Scheduler expression for reconciling MSK broker IPs with NLB target groups."
+  type        = string
+  default     = "rate(1 minute)"
+
+  validation {
+    condition     = length(trimspace(var.broker_target_reconciliation_schedule_expression)) > 0
+    error_message = "broker_target_reconciliation_schedule_expression must not be empty."
+  }
+}
+
+variable "broker_target_reconciler_log_retention_days" {
+  description = "CloudWatch Logs retention for the broker target reconciler Lambda."
+  type        = number
+  default     = 14
+}
+
+variable "broker_target_reconciler_alarm_actions" {
+  description = "ARNs notified when broker target reconciliation fails."
+  type        = list(string)
+  default     = []
+}
+
 variable "topic_name" {
   description = "Kafka topic name used by the ClickPipe. The module does not create or seed the topic."
   type        = string

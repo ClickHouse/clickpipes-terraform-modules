@@ -13,9 +13,11 @@ terraform plan
 terraform apply
 ```
 
-By default `create_clickpipe = false`. This creates MSK Express, NLBs, VPC endpoint services, ClickPipes RPEs, bootstrap and broker DNS mappings, and the IAM reader role.
+By default `create_clickpipe = false`. This creates MSK Express, NLBs, VPC endpoint services, ClickPipes RPEs, bootstrap and broker DNS mappings, the IAM reader role, and a scheduled Lambda that keeps NLB targets aligned with current broker IPs.
 
 Create the Kafka topic and produce records out of band, then set `create_clickpipe = true` with `consumer_group`, `destination_table`, and `columns` to create the ClickPipe.
+
+The broker target reconciler runs once per minute by default. Change `broker_target_reconciliation_schedule_expression` to use another EventBridge Scheduler rate or cron expression. Set `broker_target_reconciler_alarm_actions` to receive notifications when reconciliation fails.
 
 ## Cross-Region PrivateLink
 

@@ -24,7 +24,7 @@ output "broker_hosts" {
 }
 
 output "broker_private_ips" {
-  description = "MSK broker private IPs keyed by broker ID."
+  description = "MSK broker private IPs observed during the latest Terraform refresh, keyed by broker ID."
   value = {
     for key in local.broker_keys : key => local.broker_nodes_by_key[key].client_vpc_ip_address
   }
@@ -106,6 +106,21 @@ output "custom_private_dns_mappings" {
       }
     ]
   ])
+}
+
+output "broker_target_reconciler_function_name" {
+  description = "Lambda function that reconciles current MSK broker IPs with NLB target groups."
+  value       = aws_lambda_function.broker_target_reconciler.function_name
+}
+
+output "broker_target_reconciliation_schedule_arn" {
+  description = "EventBridge Scheduler schedule that runs broker target reconciliation."
+  value       = aws_scheduler_schedule.broker_target_reconciler.arn
+}
+
+output "broker_target_reconciler_alarm_arn" {
+  description = "CloudWatch alarm for broker target reconciliation failures."
+  value       = aws_cloudwatch_metric_alarm.broker_target_reconciler_errors.arn
 }
 
 output "clickpipe_id" {

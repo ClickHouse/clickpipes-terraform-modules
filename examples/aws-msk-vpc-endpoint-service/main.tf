@@ -26,25 +26,27 @@ provider "clickhouse" {
 module "aws_msk_vpc_endpoint_service" {
   source = "../../modules/aws-msk-vpc-endpoint-service"
 
-  clickhouse_service_id              = var.clickhouse_service_id
-  clickhouse_service_iam_role        = var.clickhouse_service_iam_role
-  clickpipes_consumer_aws_account_id = var.clickpipes_consumer_aws_account_id
-  region                             = var.region
-  supported_regions                  = var.supported_regions
-  resource_prefix                    = var.resource_prefix
-  az_count                           = var.az_count
-  vpc_cidr                           = var.vpc_cidr
-  kafka_version                      = var.kafka_version
-  broker_instance_type               = var.broker_instance_type
-  number_of_broker_nodes             = var.number_of_broker_nodes
-  topic_name                         = var.topic_name
-  create_clickpipe                   = var.create_clickpipe
-  clickpipe_name                     = var.clickpipe_name
-  consumer_group                     = var.consumer_group
-  destination_table                  = var.destination_table
-  columns                            = var.columns
-  sorting_key                        = var.sorting_key
-  tags                               = var.tags
+  clickhouse_service_id                            = var.clickhouse_service_id
+  clickhouse_service_iam_role                      = var.clickhouse_service_iam_role
+  clickpipes_consumer_aws_account_id               = var.clickpipes_consumer_aws_account_id
+  region                                           = var.region
+  supported_regions                                = var.supported_regions
+  resource_prefix                                  = var.resource_prefix
+  az_count                                         = var.az_count
+  vpc_cidr                                         = var.vpc_cidr
+  kafka_version                                    = var.kafka_version
+  broker_instance_type                             = var.broker_instance_type
+  number_of_broker_nodes                           = var.number_of_broker_nodes
+  broker_target_reconciliation_schedule_expression = var.broker_target_reconciliation_schedule_expression
+  broker_target_reconciler_alarm_actions           = var.broker_target_reconciler_alarm_actions
+  topic_name                                       = var.topic_name
+  create_clickpipe                                 = var.create_clickpipe
+  clickpipe_name                                   = var.clickpipe_name
+  consumer_group                                   = var.consumer_group
+  destination_table                                = var.destination_table
+  columns                                          = var.columns
+  sorting_key                                      = var.sorting_key
+  tags                                             = var.tags
 }
 
 output "bootstrap_endpoint" {
@@ -65,6 +67,14 @@ output "reverse_private_endpoint_ids" {
 
 output "clickpipe_msk_reader_role_arn" {
   value = module.aws_msk_vpc_endpoint_service.clickpipe_msk_reader_role_arn
+}
+
+output "broker_target_reconciler_function_name" {
+  value = module.aws_msk_vpc_endpoint_service.broker_target_reconciler_function_name
+}
+
+output "broker_target_reconciler_alarm_arn" {
+  value = module.aws_msk_vpc_endpoint_service.broker_target_reconciler_alarm_arn
 }
 
 output "clickpipe_id" {

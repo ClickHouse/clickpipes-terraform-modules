@@ -13,7 +13,7 @@ Each public module creates the source infrastructure, ClickPipes Reverse Private
 - `modules/gcp-cloud-sql-native-psc` creates Cloud SQL for PostgreSQL with native Private Service Connect enabled, a ClickPipes RPE, and optionally a Postgres ClickPipe.
 - `modules/gcp-cloud-sql-private-network-psc` creates Cloud SQL for PostgreSQL on a private network, exposes it through an internal TCP load balancer and producer-owned PSC service attachment, creates a ClickPipes RPE, and optionally a Postgres ClickPipe.
 - `modules/aws-msk-serverless-vpc-resource` creates AWS MSK Serverless, exposes it through VPC Lattice resource configuration and ClickPipes `VPC_RESOURCE`, creates wildcard private DNS mapping and IAM authentication, and optionally a Kafka ClickPipe.
-- `modules/aws-msk-vpc-endpoint-service` creates AWS MSK Express, exposes each broker through a broker-specific Network Load Balancer and VPC endpoint service, creates broker-specific ClickPipes RPEs with private DNS mappings, and optionally a Kafka ClickPipe.
+- `modules/aws-msk-vpc-endpoint-service` creates AWS MSK Express, exposes each broker through a broker-specific Network Load Balancer and VPC endpoint service, reconciles changing broker IP targets, creates broker-specific ClickPipes RPEs with private DNS mappings, and optionally a Kafka ClickPipe.
 - `modules/confluent-dedicated` creates Confluent Cloud Dedicated Kafka on AWS PrivateLink or GCP PSC, ClickPipes RPEs, custom private DNS mappings, and optionally a Kafka ClickPipe.
 - `modules/confluent-serverless` creates Confluent Cloud Enterprise/serverless Kafka on AWS PrivateLink or GCP PSC ingress gateways, a ClickPipes RPE, custom private DNS mappings, and optionally a Kafka ClickPipe.
 

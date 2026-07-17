@@ -15,6 +15,11 @@ supported_regions = ["eu-west-1"]
 
 resource_prefix = "cp-msk-vpce"
 
+# A one-minute interval usually costs $0 within AWS free tiers and less than
+# approximately $0.30 per cluster per month without them.
+broker_target_reconciliation_schedule_expression = "rate(1 minute)"
+broker_target_reconciler_alarm_actions             = []
+
 topic_name = "clickpipes-demo"
 
 # Enable only after the topic exists and contains records.
