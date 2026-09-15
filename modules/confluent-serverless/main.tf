@@ -90,10 +90,6 @@ locals {
 
   custom_private_dns_mappings = [
     {
-      // Maps public GLB hostname to the RPE for ClickPipes DNS compatibility. See README for more details
-      private_dns_name = "*.${local.glb_dns_domain}"
-    },
-    {
       private_dns_name = "*.${local.access_point_dns_domain}"
     },
   ]
