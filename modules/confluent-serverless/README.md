@@ -8,10 +8,11 @@ The module supports AWS PrivateLink (`cloud = "AWS"`) and GCP Private Service Co
 
 ## Private DNS
 
-Confluent serverless access point hostnames resolve through a public GLB hostname that CNAMEs to an access-point DNS domain. The ClickPipes custom private DNS currently does not support resolving public hostnames into a custom mapped CNAME targets. To support this flow, the module configures both mappings on the RPE:
+Confluent serverless bootstrap endpoints use a public GLB hostname that CNAMEs to an access-point DNS domain. ClickPipes follows this CNAME and applies the custom private DNS mapping to the target, so public GLB bootstrap endpoints are supported without a direct GLB wildcard mapping.
 
-- `*.{region}.{cloud}.accesspoint.glb.confluent.cloud` — maps the original GLB hostname and is required for ClickPipes DNS proxy compatibility.
-- `*.{access_point_dns_domain}` — matches Confluent's documented private DNS domain and will become useful once CNAME-target mapping is supported end to end.
+The module configures only Confluent's documented private DNS mapping:
+
+- `*.{access_point_dns_domain}` — maps the GLB hostname's CNAME target to the RPE.
 
 This has an important implication for the Reverse Private Endpoint setup. It is not possible to create multiple RPEs for multiple access points in the samer ClickHouse service. This is a known limitation that is being tracked by ClickPipes team.
 

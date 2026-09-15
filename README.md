@@ -15,7 +15,7 @@ Each public module creates the source infrastructure, ClickPipes Reverse Private
 - `modules/aws-msk-serverless-vpc-resource` creates AWS MSK Serverless, exposes it through VPC Lattice resource configuration and ClickPipes `VPC_RESOURCE`, creates wildcard private DNS mapping and IAM authentication, and optionally a Kafka ClickPipe.
 - `modules/aws-msk-vpc-endpoint-service` creates AWS MSK Express, exposes each broker through a broker-specific Network Load Balancer and VPC endpoint service, creates broker-specific ClickPipes RPEs with private DNS mappings, and optionally a Kafka ClickPipe.
 - `modules/confluent-dedicated` creates Confluent Cloud Dedicated Kafka on AWS PrivateLink or GCP PSC, ClickPipes RPEs, custom private DNS mappings, and optionally a Kafka ClickPipe.
-- `modules/confluent-serverless` creates Confluent Cloud Enterprise/serverless Kafka on AWS PrivateLink or GCP PSC ingress gateways, a ClickPipes RPE, custom private DNS mappings, and optionally a Kafka ClickPipe.
+- `modules/confluent-serverless` creates Confluent Cloud Enterprise/serverless Kafka on AWS PrivateLink or GCP PSC ingress gateways, a ClickPipes RPE, CNAME-target private DNS mappings with public GLB bootstrap support, and optionally a Kafka ClickPipe.
 
 ## `create_clickpipe`
 
