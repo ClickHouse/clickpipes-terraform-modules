@@ -39,7 +39,7 @@ output "access_point_dns_domain" {
 }
 
 output "glb_dns_domain" {
-  description = "Confluent GLB DNS domain mapped through the ClickPipes DNS proxy."
+  description = "Public Confluent GLB DNS domain supported through CNAME-target resolution."
   value       = local.glb_dns_domain
 }
 
